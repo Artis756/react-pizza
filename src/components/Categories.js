@@ -1,7 +1,6 @@
-import { useState } from "react"
 
-const Categories = () => {
-	const [activeFilter, setActiveFilter] = useState(0);
+const Categories = ({ categoryId, setCategoryId }) => {
+
 	const filters = [
 		{ label: "Все", id: 0 },
 		{ label: "Мясные", id: 1 },
@@ -15,9 +14,9 @@ const Categories = () => {
 			<ul>
 				{filters.map(({ label, id }) => {
 					return <li
-						className={id === activeFilter ? 'active' : null}
+						className={id === categoryId ? 'active' : null}
 						key={id}
-						onClick={() => setActiveFilter(id)}
+						onClick={() => setCategoryId(id)}
 					>{label}</li>
 				})}
 			</ul>

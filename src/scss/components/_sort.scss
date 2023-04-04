@@ -1,8 +1,10 @@
 @import "../variables";
 
-
-
 .sort {
+	img {
+		width: 20px;
+		height: 20px;
+	}
 	position: relative;
 	&__label {
 		display: flex;
@@ -35,7 +37,8 @@
 		border-radius: 10px;
 		overflow: hidden;
 		padding: 10px 0;
-		width: 160px;
+		width: 170px;
+		text-align: center;
 
 		ul {
 			overflow: hidden;
