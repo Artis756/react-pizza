@@ -1,5 +1,9 @@
+import { useDispatch, useSelector } from "react-redux"
+import { setCategoryId } from "../redux/slices/filtersSlice";
 
-const Categories = ({ categoryId, setCategoryId }) => {
+const Categories = () => {
+	const categoryId = useSelector(state => state.filters.categoryId);
+	const dispatch = useDispatch();
 
 	const filters = [
 		{ label: "Все", id: 0 },
@@ -16,7 +20,7 @@ const Categories = ({ categoryId, setCategoryId }) => {
 					return <li
 						className={id === categoryId ? 'active' : null}
 						key={id}
-						onClick={() => setCategoryId(id)}
+						onClick={() => dispatch(setCategoryId(id))}
 					>{label}</li>
 				})}
 			</ul>

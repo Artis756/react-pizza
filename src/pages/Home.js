@@ -4,48 +4,48 @@ import PizzaItem from '../components/PizzaItem';
 import PizzaSkeleton from '../components/PizzaItem/PizzaSkeleton';
 import Sort from '../components/Sort/Sort'
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Pagination from '../components/Pagination/Pagination';
+import { fetchPizzas } from '../redux/slices/pizzaSlice';
+
+
 
 const Home = () => {
-	const [items, setItems] = useState([])
-	const [loading, setLoading] = useState(true);
-	const [categoryId, setCategoryId] = useState(0);
-	const [sortType, setSortType] = useState('rating');
-
-	const fetchPizzas = (pizzas) => {
-		setItems(pizzas);
-		setLoading(false)
-	}
+	const { sortType, categoryId, searchValue } = useSelector(state => state.filters);
+	const { pizzas, status } = useSelector(state => state.pizzas);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		const sortBy = sortType.replace('-', '');
 		const order = sortType.includes('-') ? 'desc' : 'asc';
-		const category = categoryId > 0 ? 'category=' + categoryId : ''
+		const category = categoryId > 0 ? 'category=' + categoryId : '';
+
 		const url = `https://642afee600dfa3b54754647e.mockapi.io/pizzas?${category}&sortBy=${sortBy}&order=${order}`;
 
-		setLoading(true)
-		fetch(url)
-			.then(res => res.json())
-			.then(fetchPizzas)
-			.catch(console.log)
-		window.scrollTo(0, 0)
+		dispatch(fetchPizzas(url))
 	}, [categoryId, sortType])
 
 	return (
 		<>
 			<div className="content__top">
-				<Categories categoryId={categoryId} setCategoryId={setCategoryId} />
-				<Sort sortType={sortType} setSortType={setSortType} />
+				<Categories />
+				<Sort />
 			</div>
 			<h2 className="content__title">Все пиццы</h2>
 			<div className="content__items">
-				{loading && [1, 2, 3, 4, 5, 6].map(item => <PizzaSkeleton key={item} />)}
-				{items.map(pizza => {
-					return <PizzaItem {...pizza} key={pizza.id} />
-				})}
+				{status === 'loading' && [1, 2, 3, 4].map(item => <PizzaSkeleton key={item} />)}
+				{status === 'idle' &&
+					// Фильтрация на стороне UI, т.к. mockapi не хочет выполнять поиск по 2-м полям сразу
+					pizzas.filter(item => item.title.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0)
+						.map(pizza => {
+							return <PizzaItem {...pizza} key={pizza.id} />
+						})}
 			</div>
+			{pizzas.length !== 0 && <Pagination totalPages={pizzas} />}
 		</>
 	)
 }
 
 export default Home
+

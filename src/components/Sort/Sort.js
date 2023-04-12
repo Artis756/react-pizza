@@ -1,8 +1,14 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import arrowUp from './up-arrow.png';
 import arrowDown from './down-arrow.png';
+import { useDispatch, useSelector } from "react-redux";
+import { setSortType } from "../../redux/slices/filtersSlice";
 
-const Sort = ({ sortType, setSortType }) => {
+const Sort = () => {
+	const sortType = useSelector(state => state.filters.sortType);
+	const dispatch = useDispatch();
+	const sortRef = useRef();
+
 	const [isOpen, setIsOpen] = useState(false);
 	const filters = [
 		{ label: 'популярности', value: 'rating' },
@@ -12,14 +18,24 @@ const Sort = ({ sortType, setSortType }) => {
 		{ label: 'алфавиту', value: 'title' },
 		{ label: 'алфавиту', value: '-title' },
 	]
+	const onWindowClick = (e) => {
+		if (e.target.closest('.sort') === sortRef.current) return;
+		setIsOpen(false);
+	}
+	useEffect(() => {
+		window.addEventListener('click', onWindowClick)
+		return () => {
+			window.removeEventListener('click', onWindowClick)
+		}
+	}, [])
 
 	const handleSortClick = (value) => {
-		setSortType(value);
+		dispatch(setSortType(value))
 		setIsOpen(isOpen => !isOpen)
 	}
 
 	return (
-		<div className="sort">
+		<div ref={sortRef} className="sort">
 			<div className="sort__label">
 				<b>Сортировка по:</b>
 				<span onClick={() => setIsOpen(isOpen => !isOpen)}>{filters.find(item => item.value === sortType).label} <img src={sortType.indexOf('-') > -1 ? arrowDown : arrowUp} alt="arrow" /></span>
